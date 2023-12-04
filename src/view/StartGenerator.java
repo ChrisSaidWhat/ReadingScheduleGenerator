@@ -38,7 +38,6 @@ public class StartGenerator {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		
-		
 	}
 
 }
