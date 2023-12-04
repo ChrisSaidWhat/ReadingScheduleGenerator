@@ -23,8 +23,6 @@ public class StartGenerator {
 		 * 		end program
 		*/
 		
-		System.out.println("Hello!");
-		
 	}
 
 }
