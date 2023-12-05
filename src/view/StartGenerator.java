@@ -16,9 +16,9 @@ public class StartGenerator {
 		/*	Algorithm
 		 * 		-start program
 		 * 		-render GUI fields and buttons
-		 * 		get book title, pages, days from user
-		 * 		calculate pages per day
-		 * 		add title and pages to array 
+		 * 		-get book title, pages, days from user
+		 * 		-calculate pages per day
+		 * 		-add title and pages to array 
 		 * 		get current date and from that assign dates to each days pages
 		 * 		display date, title, pages per day in pane
 		 * 		repeat user input, calculations, and display until user prints output

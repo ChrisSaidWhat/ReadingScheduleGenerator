@@ -10,6 +10,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import model.ScheduleGenerator;
+
 /**  
 * Christopher Said - cwsaid  
 * CIS171 <11961>
@@ -19,16 +21,21 @@ import javax.swing.JTextField;
 @SuppressWarnings("serial")
 public class GeneratorPanel extends JPanel {
 	
+	private JTextField title;
+	private JTextField pagesInBook;
+	private JTextField daysToRead;
+	private boolean continueRunning = true;
+	
 	/**
 	 * default constructor
 	 */
 	public GeneratorPanel() {
 		add(createLabel("Book Title: "));
-		add(createField(25));
+		title = (JTextField) add(createField(25));
 		add(createLabel("Pages In Book: "));
-		add(createField(5));
+		pagesInBook = (JTextField) add(createField(5));
 		add(createLabel("Days To Read: "));
-		add(createField(5));
+		daysToRead = (JTextField) add(createField(5));
 		add(createAddBookButton("Add Book To Schedule"));
 		add(createNextBookButton("Start Next Book"));
 		add(createGenerateScheduleButton("Generate Schedule"));
@@ -115,6 +122,10 @@ public class GeneratorPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			String titleField = title.getText();
+			String pagesField = pagesInBook.getText();
+			String daysField = daysToRead.getText();
+			ScheduleGenerator schdGen = new ScheduleGenerator(titleField, pagesField, daysField);
 			
 		}
 		
@@ -124,7 +135,9 @@ public class GeneratorPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			
+			title.setText("");
+			pagesInBook.setText("");
+			daysToRead.setText("");
 		}
 		
 	}
@@ -133,7 +146,7 @@ public class GeneratorPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			
+			continueRunning = false;
 		}
 		
 	}
