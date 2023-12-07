@@ -1,5 +1,6 @@
 package model;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**  
@@ -13,9 +14,12 @@ public class ScheduleGenerator {
 	private String bookTitle;
 	private int bookPages;
 	private int bookDays;
-	private double bookPagesPerDay;
+	private String bookPagesPerDay;
 	private static ArrayList<String> titles = new ArrayList<String>();
-	private static ArrayList<Double> pagesPer = new ArrayList<Double>();
+	private static ArrayList<String> pagesPer = new ArrayList<String>();
+	private static StringBuilder previewAssembler = new StringBuilder();
+	private DecimalFormat twoPositions = new DecimalFormat(".00");
+	private static int objectsCreated = 0;
 	
 	/**
 	 * constructor for the ScheduleGenerator class 
@@ -28,8 +32,9 @@ public class ScheduleGenerator {
 		this.bookPages = Integer.parseInt(pages);
 		this.bookDays = Integer.parseInt(days);
 		this.calculatePagesPerDay(bookPages, bookDays);
-		this.addTitle(this.bookTitle);
-		this.addPagesPer(this.bookPagesPerDay);
+		addTitle(this.bookTitle);
+		addPagesPer(this.bookPagesPerDay);
+		ScheduleGenerator.objectsCreated++;
 	}
 
 	/**
@@ -60,8 +65,16 @@ public class ScheduleGenerator {
 	 * retrieves the current value of the private bookPagesPerDay variable
 	 * @return the bookPagesPerDay
 	 */
-	public double getPagesPerDay() {
+	public String getPagesPerDay() {
 		return this.bookPagesPerDay;
+	}
+	
+	/**
+	 * retrieves the current value of the private static objectsCreated variable 
+	 * @return the number of objects created 
+	 */
+	public static int getObjectsCreated() {
+		return ScheduleGenerator.objectsCreated;
 	}
 	
 	/**
@@ -74,9 +87,9 @@ public class ScheduleGenerator {
 	
 	/**
 	 * adds the given pages per day to the pagesPer array list
-	 * @param pagesPerDay the double resulting from the calculatePagesPerDay() 
+	 * @param pagesPerDay the String resulting from the calculatePagesPerDay() 
 	 */
-	public void addPagesPer(double pagesPerDay) {
+	public void addPagesPer(String pagesPerDay) {
 		ScheduleGenerator.pagesPer.add(pagesPerDay);
 	}
 	
@@ -91,12 +104,12 @@ public class ScheduleGenerator {
 	}
 	
 	/**
-	 * returns the double number found at the given index of the pagesPer array list
+	 * returns the formatted String value found at the given index of the pagesPer array list
 	 * @param index the integer value of the location in the pagesPer array list to be returned
 	 * @return the found number at the given position
 	 */
-	public double retrievePagesPerDay(int index) {
-		double foundPagesPer = ScheduleGenerator.pagesPer.get(index);
+	public String retrievePagesPerDay(int index) {
+		String foundPagesPer = ScheduleGenerator.pagesPer.get(index);
 		return foundPagesPer;
 	}
 	
@@ -106,8 +119,44 @@ public class ScheduleGenerator {
 	 * @param days the number of days in which the book must be read
 	 */
 	public void calculatePagesPerDay(Integer pages, Integer days) {
-		double pagesPerDay = (double)pages/ (double)days;
+		String pagesPerDay = twoPositions.format(pages/ (double)days);
 		this.bookPagesPerDay = pagesPerDay;
 	}
-
+	
+	/**
+	 * creates and returns a StringBuilder that contains the current contents of the titles and pagesPer array lists for display
+	 * @return the created StringBuilder for display to the pane
+	 */
+	public StringBuilder displaySchedulePreview() {
+		//	referenced ChatGPT for assistance in understanding StringBuilder and static methods/variables
+		previewAssembler.setLength(0);
+		
+		int i = 0;
+		
+		while(i < ScheduleGenerator.objectsCreated) {
+			previewAssembler.append(retrieveTitle(i) + " ");
+			previewAssembler.append(retrievePagesPerDay(i) + "\n");
+			i++;
+		}
+		
+		return previewAssembler;
+	}
+	
+	/**
+	 * determines if a String contains numeric information
+	 * @param str the String to be evaluated
+	 * @return true if the given String contains numeric information
+	 * @return false if the given String does not contain numeric information
+	 */
+	public static boolean isNumeric(String str) {
+		//	code was taken from forums.oracle.com
+		try {
+			Integer.parseInt(str);
+			return true;
+		}
+		catch(NumberFormatException ex) {
+			return false;
+		}
+	}
+	
 }

@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -24,6 +25,7 @@ public class GeneratorPanel extends JPanel {
 	private JTextField title;
 	private JTextField pagesInBook;
 	private JTextField daysToRead;
+	private JTextArea schdPreview;
 	private boolean continueRunning = true;
 	
 	/**
@@ -39,6 +41,7 @@ public class GeneratorPanel extends JPanel {
 		add(createAddBookButton("Add Book To Schedule"));
 		add(createNextBookButton("Start Next Book"));
 		add(createGenerateScheduleButton("Generate Schedule"));
+		schdPreview = (JTextArea) add(createSchedulePreviewPane());
 		add(createScrollPane());
 	}
 	
@@ -99,11 +102,10 @@ public class GeneratorPanel extends JPanel {
 	}
 	
 	/**
-	 * creates scroll pane for the GUI where entered books will be stored until the schedule is generated
-	 * @return new scroll pane component holding a predetermined text area
+	 * creates the text area to be held within the scroll pane and is updated as user input is received
+	 * @return new text area component
 	 */
-	@SuppressWarnings("static-access")
-	public JScrollPane createScrollPane() {
+	public JTextArea createSchedulePreviewPane() {
 		//	this code was taken from https://youtu.be/OJSAnlzXRDk?si=2AdB62mpg6QpLFGs
 		
 		final int AREA_WIDTH = 20;
@@ -113,19 +115,47 @@ public class GeneratorPanel extends JPanel {
 		JTextArea area = new JTextArea(AREA_WIDTH, AREA_HEIGHT);
 		area.setLineWrap(true);
 		area.setMargin(new Insets(INSET,INSET,INSET,INSET));
-		JScrollPane scrollPane = new JScrollPane(area);
+		return area;
+	}
+	
+	/**
+	 * creates scroll pane for the GUI where entered books will be stored until the schedule is generated
+	 * @return new scroll pane component holding a predetermined text area
+	 */
+	@SuppressWarnings("static-access")
+	public JScrollPane createScrollPane() {
+		//	this code was taken from https://youtu.be/OJSAnlzXRDk?si=2AdB62mpg6QpLFGs
+		
+		JScrollPane scrollPane = new JScrollPane(schdPreview);
 		scrollPane.setVerticalScrollBarPolicy(scrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		return scrollPane;
 	}
 	
 	class AddBookListener implements ActionListener {
-
+		
+		/**
+		 * triggers a series of actions that validates, calculates, displays, and updates user input and program output
+		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			final String BLANK_FIELDS_WARNING = "Fields Cannot Be Blank!";
+			final String NUMERIC_INPUT_WARNING = "Pages & Days Must Be Whole Numbers!";
 			String titleField = title.getText();
 			String pagesField = pagesInBook.getText();
 			String daysField = daysToRead.getText();
-			ScheduleGenerator schdGen = new ScheduleGenerator(titleField, pagesField, daysField);
+			
+			if(titleField.equals("") || pagesField.equals("") || daysField.equals("")) {
+				JOptionPane.showMessageDialog(schdPreview, BLANK_FIELDS_WARNING, "WARNING", JOptionPane.WARNING_MESSAGE);
+			}
+			else if(!ScheduleGenerator.isNumeric(pagesField) || !ScheduleGenerator.isNumeric(daysField)){
+				JOptionPane.showMessageDialog(schdPreview, NUMERIC_INPUT_WARNING, "WARNING", JOptionPane.WARNING_MESSAGE);
+			}
+			else {
+				schdPreview.setText("");
+				ScheduleGenerator schdGen = new ScheduleGenerator(titleField, pagesField, daysField);
+				String previewContents = schdGen.displaySchedulePreview().toString();
+				schdPreview.append(previewContents);
+			}
 			
 		}
 		
@@ -133,6 +163,9 @@ public class GeneratorPanel extends JPanel {
 	
 	class NextBookListener implements ActionListener {
 
+		/**
+		 * triggers events that clear the text entry fields for the user to reenter data
+		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			title.setText("");
