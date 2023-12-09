@@ -26,6 +26,9 @@ import model.ScheduleGenerator;
 @SuppressWarnings("serial")
 public class GeneratorPanel extends JPanel {
 	
+	final private int TITLE_COLS = 25;
+	final private int NUMERIC_COLS = 5;
+	
 	private JTextField title;
 	private JTextField pagesInBook;
 	private JTextField daysToRead;
@@ -36,11 +39,11 @@ public class GeneratorPanel extends JPanel {
 	 */
 	public GeneratorPanel() {
 		add(createLabel("Book Title: "));
-		title = (JTextField) add(createField(25));
+		title = (JTextField) add(createField(TITLE_COLS));
 		add(createLabel("Pages In Book: "));
-		pagesInBook = (JTextField) add(createField(5));
+		pagesInBook = (JTextField) add(createField(NUMERIC_COLS));
 		add(createLabel("Days To Read: "));
-		daysToRead = (JTextField) add(createField(5));
+		daysToRead = (JTextField) add(createField(NUMERIC_COLS));
 		add(createAddBookButton("Add Book To Schedule"));
 		add(createNextBookButton("Start Next Book"));
 		add(createGenerateScheduleButton("Generate Schedule"));
@@ -185,11 +188,13 @@ public class GeneratorPanel extends JPanel {
 		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			final int SUCCESSFUL_TERMINATION = 0;
+			
 			title.setText("");
 			pagesInBook.setText("");
 			daysToRead.setText("");
 			generateScheduleFile(schdPreview.getText());
-			System.exit(0);
+			System.exit(SUCCESSFUL_TERMINATION);
 		}
 		
 		/**

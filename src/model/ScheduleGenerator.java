@@ -1,7 +1,12 @@
 package model;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**  
 * Christopher Said - cwsaid  
@@ -11,12 +16,16 @@ import java.util.ArrayList;
 
 public class ScheduleGenerator {
 	
+	final private int EMPTY = 0;
+	
 	private String bookTitle;
 	private int bookPages;
 	private int bookDays;
 	private String bookPagesPerDay;
 	private static ArrayList<String> titles = new ArrayList<String>();
+	private static ArrayList<Integer> days = new ArrayList<Integer>();
 	private static ArrayList<String> pagesPer = new ArrayList<String>();
+	private StringBuilder datesAssembler = new StringBuilder();
 	private static StringBuilder previewAssembler = new StringBuilder();
 	private DecimalFormat twoPositions = new DecimalFormat(".00");
 	private static int objectsCreated = 0;
@@ -33,6 +42,7 @@ public class ScheduleGenerator {
 		this.bookDays = Integer.parseInt(days);
 		this.calculatePagesPerDay(bookPages, bookDays);
 		addTitle(this.bookTitle);
+		addDays(this.bookDays);
 		addPagesPer(this.bookPagesPerDay);
 		ScheduleGenerator.objectsCreated++;
 	}
@@ -86,6 +96,14 @@ public class ScheduleGenerator {
 	}
 	
 	/**
+	 * adds the specified days to read to the days array list
+	 * @param days the number of days in which the corresponding title must be read
+	 */
+	public void addDays(int days) {
+		ScheduleGenerator.days.add(days);
+	}
+	
+	/**
 	 * adds the given pages per day to the pagesPer array list
 	 * @param pagesPerDay the String resulting from the calculatePagesPerDay() 
 	 */
@@ -101,6 +119,16 @@ public class ScheduleGenerator {
 	public String retrieveTitle(int index) {
 		String foundTitle = ScheduleGenerator.titles.get(index);
 		return foundTitle;
+	}
+	
+	/**
+	 * returns the number of days found at the given index of the days array list
+	 * @param index the integer value of the location in the days array list to be returned
+	 * @return the found number of days at the given position
+	 */
+	public int retrieveDays(int index) {
+		int foundDays = ScheduleGenerator.days.get(index);
+		return foundDays;
 	}
 	
 	/**
@@ -124,18 +152,64 @@ public class ScheduleGenerator {
 	}
 	
 	/**
+	 * calculates, compiles, sorts, and prepares for display the title, dates, and pages per day for each item entered into the program
+	 * @param titleIndex the integer value of the index containing the desired title in the titles array list
+	 * @param daysIndex the integer value of the index containing the desired number of days in the days array list
+	 * @param perDayIndex the integer value of the index containing the desired number of pages per day in the pagesPer array list
+	 * @return the StringBuilder that contains the prepared text for display
+	 */
+	private StringBuilder prepareSchedulePreview(int titleIndex , int daysIndex ,int perDayIndex) {
+		//	code taken and adapted as well as re-factored from ChatGPT
+		final int INCREMENT_DAY_ONCE = 1;
+		
+		datesAssembler.setLength(EMPTY);
+		
+		String title = retrieveTitle(titleIndex);
+		String pagesPerDay = retrievePagesPerDay(perDayIndex);
+		LocalDate currentDate = LocalDate.now();
+		LocalDate endDate = currentDate.plusDays(retrieveDays(daysIndex));
+		DateTimeFormatter stdDateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		
+		List<String> associatedDates = new ArrayList<>();
+		
+		while(!currentDate.isAfter(endDate)) {
+			associatedDates.add(currentDate.format(stdDateFormat));
+			currentDate = currentDate.plus(INCREMENT_DAY_ONCE, ChronoUnit.DAYS);
+			
+			associatedDates.sort(Comparator
+			        .comparing((String date) -> LocalDate.parse(date, stdDateFormat).getYear(), Comparator.naturalOrder())
+			        .thenComparing(date -> LocalDate.parse(date, stdDateFormat).getMonthValue(), Comparator.reverseOrder())
+			        .thenComparing(Comparator.naturalOrder()));
+			
+		}
+		
+		Object[] output = associatedDates.toArray();
+		
+		int i = 0;
+		
+		while(i < output.length - 1) {
+			datesAssembler.append(title + "     ");
+			datesAssembler.append(output[i] + "     ");
+			datesAssembler.append(pagesPerDay + " Pages\n");
+			i++;
+		}
+		
+		return datesAssembler;
+		
+	}
+
+	/**
 	 * creates and returns a StringBuilder that contains the current contents of the titles and pagesPer array lists for display
 	 * @return the created StringBuilder for display to the pane
 	 */
 	public StringBuilder displaySchedulePreview() {
 		//	referenced ChatGPT for assistance in understanding StringBuilder and static methods/variables
-		previewAssembler.setLength(0);
+		previewAssembler.setLength(EMPTY);
 		
 		int i = 0;
 		
 		while(i < ScheduleGenerator.objectsCreated) {
-			previewAssembler.append(retrieveTitle(i) + " ");
-			previewAssembler.append(retrievePagesPerDay(i) + "\n");
+			previewAssembler.append(prepareSchedulePreview(i, i, i));
 			i++;
 		}
 		

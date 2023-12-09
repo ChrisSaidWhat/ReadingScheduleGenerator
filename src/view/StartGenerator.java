@@ -22,8 +22,9 @@ public class StartGenerator {
 		 * 		-calculate pages per day
 		 * 		-add title and pages to array 
 		 * 		-format pages per day to have two decimal places
-		 * 		get current date and from that assign dates to each days pages
-		 * 		display date, title, pages per day in pane
+		 * 		-get current date and from that assign dates to each days pages
+		 * 		-display date, title, pages per day in pane
+		 * 		-sort the dates in the display for output to ascending order
 		 * 		-repeat user input, calculations, and display until user prints output
 		 * 		-when user finished output contents of pane to txt file to the client desktop
 		 * 		-end program
