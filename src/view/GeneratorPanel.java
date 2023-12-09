@@ -3,6 +3,10 @@ package view;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -26,7 +30,6 @@ public class GeneratorPanel extends JPanel {
 	private JTextField pagesInBook;
 	private JTextField daysToRead;
 	private JTextArea schdPreview;
-	private boolean continueRunning = true;
 	
 	/**
 	 * default constructor
@@ -177,9 +180,39 @@ public class GeneratorPanel extends JPanel {
 	
 	class GenerateScheduleListener implements ActionListener {
 
+		/**
+		 * triggers events that clear the text entry fields, generates and outputs the schedule file to the desktop, and terminates the program
+		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			continueRunning = false;
+			title.setText("");
+			pagesInBook.setText("");
+			daysToRead.setText("");
+			generateScheduleFile(schdPreview.getText());
+			System.exit(0);
+		}
+		
+		/**
+		 * determines the path to the user's desktop, generates and outputs the schedule file to the user's desktop, and provides feedback to the user
+		 * @param text the contents of the schdPreview text area to be turned into a txt file
+		 */
+		public void generateScheduleFile(String text) {
+			//	this code was taken and adapted from ChatGPT to ensure that writing to a file worked the same with a GUI 
+			//	and understand how to direct the location of file output on the client
+			String userHome = System.getProperty("user.home");
+			String desktopPath = userHome + File.separator + "Desktop";
+			String fileName = "ReadingSchedule.txt";
+			File schdFile = new File(desktopPath, fileName);
+			
+			try(BufferedWriter efficientWriting = new BufferedWriter(new FileWriter(schdFile))) {
+				efficientWriting.write(text);
+				final String PROGRAM_TERMINATION_MESSAGE = "Success! Schedule File Generated!\nThe Schedule Is On Your Desktop!";
+				JOptionPane.showMessageDialog(schdPreview, PROGRAM_TERMINATION_MESSAGE, "MESSAGE", JOptionPane.INFORMATION_MESSAGE);
+			}
+			catch(IOException ex) {
+				final String OUTPUT_ERROR_WARNING = "Failure To Generate Schedule!";
+				JOptionPane.showMessageDialog(schdPreview, OUTPUT_ERROR_WARNING, "ERROR", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 		
 	}

@@ -24,15 +24,16 @@ public class StartGenerator {
 		 * 		-format pages per day to have two decimal places
 		 * 		get current date and from that assign dates to each days pages
 		 * 		display date, title, pages per day in pane
-		 * 		repeat user input, calculations, and display until user prints output
-		 * 		when user finished output contents of pane to txt file
-		 * 		end program
+		 * 		-repeat user input, calculations, and display until user prints output
+		 * 		-when user finished output contents of pane to txt file to the client desktop
+		 * 		-end program
 		*/
 		
+		//	sets the dimensions of the program frame
 		final int FRAME_WIDTH = 750;
 		final int FRAME_HEIGHT = 500;
 		
-		
+		//	creates and displays the program frame with contents
 		JFrame frame = new JFrame();
 		JPanel panel = new GeneratorPanel();
 		
